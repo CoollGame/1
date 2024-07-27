@@ -15,9 +15,18 @@
             height: 100vh;
             font-family: 'Press Start 2P', cursive;
         }
+        #title {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 3em;
+        }
         #randomNumberContainer {
             position: absolute;
-            top: 10%;
+            top: 30%;
             left: 50%;
             transform: translate(-50%, -10%);
             text-align: center;
@@ -48,6 +57,76 @@
             margin-top: 20px;
             font-size: 24px;
         }
+        #readmeButton, #donateButton {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Press Start 2P', cursive;
+            margin: 10px;
+            border-radius: 10px;
+        }
+        #readmeButton:hover, #donateButton:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.8);
+        }
+        #readmeButton:active, #donateButton:active {
+            transform: scale(0.95);
+        }
+        #readmeModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            padding: 20px;
+            overflow-y: auto;
+            text-align: center;
+            z-index: 1000;
+        }
+        #readmeContent {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        #closeReadme {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Press Start 2P', cursive;
+            margin: 10px;
+            border-radius: 10px;
+        }
+        #closeReadme:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.8);
+        }
+        #closeReadme:active {
+            transform: scale(0.95);
+        }
+        #footer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
         canvas { 
             display: block;
         }
@@ -55,14 +134,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <audio id="backgroundMusic" src="ambient.mp3" loop autoplay></audio>
+    <div id="title">Jackpot Boost</div>
     
     <div id="randomNumberContainer">
-        <button id="generateFiveButton">Generate 5 Numbers</button>
-        <button id="generateSixButton">Generate 6 Numbers</button>
-        <button id="generateSevenButton">Generate 7 Numbers</button>
+        <button id="generateFiveButton">Generate 5 from 49</button>
+        <button id="generateSixButton">Generate 6 from 49</button>
+        <button id="generateSevenButton">Generate 7 from 50</button>
         <div id="randomNumberDisplay"></div>
+        <button id="readmeButton">README</button>
+        <button id="donateButton">Donate</button>
     </div>
+
+    <div id="readmeModal">
+        <div id="readmeContent">
+            <!-- README.md content will be loaded here -->
+        </div>
+        <button id="closeReadme">Back</button>
+    </div>
+
+    <div id="footer">Created by Ihor Kolomiichuk, 2024</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
@@ -89,8 +179,8 @@
 
             const hBlur = new THREE.ShaderPass(THREE.HorizontalBlurShader);
             const vBlur = new THREE.ShaderPass(THREE.VerticalBlurShader);
-            hBlur.uniforms['h'].value = 0.001;  // Зменшено блур
-            vBlur.uniforms['v'].value = 0.001;  // Зменшено блур
+            hBlur.uniforms['h'].value = 0.001;
+            vBlur.uniforms['v'].value = 0.001;
             composer.addPass(hBlur);
             composer.addPass(vBlur);
 
@@ -184,6 +274,23 @@
         document.getElementById('generateFiveButton').addEventListener('click', () => generateRandomNumbers(5, 49));
         document.getElementById('generateSixButton').addEventListener('click', () => generateRandomNumbers(6, 49));
         document.getElementById('generateSevenButton').addEventListener('click', () => generateRandomNumbers(7, 50));
+
+        document.getElementById('readmeButton').addEventListener('click', () => {
+            fetch('README.md')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('readmeContent').innerText = data;
+                    document.getElementById('readmeModal').style.display = 'block';
+                });
+        });
+
+        document.getElementById('closeReadme').addEventListener('click', () => {
+            document.getElementById('readmeModal').style.display = 'none';
+        });
+
+        document.getElementById('donateButton').addEventListener('click', () => {
+            window.open('https://www.paypal.com/donate/?business=PC93D4AHA54CQ&no_recurring=0&item_name=Hello+Friend%2C%0APlease+donate+to+support+the+development+of+my+project+Jackpot+Boost.+Thank+you+for+your+support%21%0A&currency_code=CAD', '_blank');
+        });
 
         init();
     </script>
